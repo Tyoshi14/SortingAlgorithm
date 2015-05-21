@@ -1,6 +1,9 @@
 package Sorting;
 
+import inputAndOutput.OutputExcel;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
@@ -20,30 +23,60 @@ public class TestClass {
 		runningTime.put("ShellSort", new HashMap<Integer, ArrayList<Long>>());
 		runningTime.put("RadixSort", new HashMap<Integer, ArrayList<Long>>());
 		
-		 TestInteger(50,runningTime);
-		
+		for(int count=0;count<1;count++){
+			TestInteger(10,runningTime);
+		}
 		//测试排序算法的正确性
 		//TestSorting();
+// 将获得的运行时间时间结果打印到Excel 文件
 		
-		Iterator<String> it = runningTime.keySet().iterator();  
-		while (it.hasNext()){
-			String key=(String)it.next();
-			System.out.println("排序算法： "+key);
-			HashMap<Integer, ArrayList<Long>> value=runningTime.get(key);
-			Iterator<Integer> iterator=value.keySet().iterator();
-			while(iterator.hasNext()){
-				Integer sampleSize=(Integer)iterator.next();
-				System.out.println("样本数量： "+sampleSize);
-				ArrayList<Long> runList=value.get(sampleSize);
-				for (Long item : runList) {
-					System.out.print("\t "+item);
-				}
-				System.out.println("\n");
-			}
-			System.out.println("\n");
+		
+		
+// 		用来打印数据 显示输出结果
+		ArrayList<ArrayList<String>> outputdata=new ArrayList<ArrayList<String>> ();
+		ArrayList<String> sortName=new ArrayList<String>();
+		sortName.add("QuickSort");
+		sortName.add("BubbleSort");
+		sortName.add("HeapSort");
+		sortName.add("InsertSort");
+		sortName.add("MergeSort");
+		sortName.add("ShellSort");
+		sortName.add("RadixSort");
+		
+		ArrayList<String> sampleSize=new ArrayList<String>();
+		sampleSize.add(" ");
+		HashMap<Integer, ArrayList<Long>> quickSortItem=runningTime.get("QuickSort");
+		Object[] quick_arr = quickSortItem.keySet().toArray();     
+		Arrays.sort(quick_arr); 
+		for (Object integer : quick_arr) {
+			Integer intValue=(Integer)integer;
+			sampleSize.add(String.valueOf(intValue));
+		}
+		outputdata.add(sampleSize);
+		
+		for (String  alName : sortName) {
+			ArrayList<String> timeSerious=new ArrayList<String>();
+			timeSerious.add(alName);
+			HashMap<Integer, ArrayList<Long>> timeItem=runningTime.get(alName);
+			Object[] key_arr = timeItem.keySet().toArray();     
+			Arrays.sort(key_arr);  
+			
+			for  (Object key : key_arr) { 
+				 ArrayList<Long> timeVlueList = timeItem.get(key); 
+				 long totalTime=0;
+				 for (Long subTime : timeVlueList) {
+					totalTime+=subTime;
+				 }
+				 long average=totalTime/(timeVlueList.size());
+				 timeSerious.add(String.valueOf(average));
+			}  
+			outputdata.add(timeSerious);
 		}
 		
+		String fileName="G:\\WorkSpace\\SortingAlgorithm\\result.xls";
+		new OutputExcel().outputFile(outputdata, fileName);
 	}
+
 
 	private static void TestSorting() {
 		Integer[] numList={1,6,3,7,9,0};
