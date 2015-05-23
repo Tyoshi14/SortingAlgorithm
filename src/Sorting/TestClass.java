@@ -2,7 +2,6 @@ package Sorting;
 
 import inputAndOutput.OutputExcel;
 
-import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,13 +10,100 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.poi.ss.formula.functions.Choose;
 
 
 public class TestClass {
 
 	public static void main(String[] args) {
 
+		//formIntergerTestData();
+		
+		formDoubleTestData();
+	}
+
+
+	private static void formDoubleTestData() {
+		HashMap<String, HashMap<Integer, ArrayList<Long>>> runningTime=
+				new HashMap<String, HashMap<Integer, ArrayList<Long>>>();
+		runningTime.put("QuickSort", new HashMap<Integer, ArrayList<Long>>());
+		runningTime.put("BubbleSort", new HashMap<Integer, ArrayList<Long>>());
+		runningTime.put("HeapSort", new HashMap<Integer, ArrayList<Long>>());
+		runningTime.put("InsertSort", new HashMap<Integer, ArrayList<Long>>());
+		runningTime.put("MergeSort", new HashMap<Integer, ArrayList<Long>>());
+		runningTime.put("ShellSort", new HashMap<Integer, ArrayList<Long>>());
+		
+		HashMap<Integer, LinkedHashMap<String, Integer>> countTop= 
+				new HashMap<Integer, LinkedHashMap<String, Integer>>();
+		
+		ArrayList<String> sortName=new ArrayList<String>();
+		sortName.add("QuickSort");
+		sortName.add("BubbleSort");
+		sortName.add("HeapSort");
+		sortName.add("InsertSort");
+		sortName.add("MergeSort");
+		sortName.add("ShellSort");
+		
+		int frequecy=5;
+	    int area=50;
+		for(int count=0;count<frequecy;count++){
+			System.out.println("********************** "+count+" ****************************");
+			TestDouble(area,runningTime,countTop,sortName);
+		}
+		
+		ArrayList<ArrayList<String>> outputdata=new ArrayList<ArrayList<String>> ();
+		ArrayList<String> sampleSize=new ArrayList<String>();
+		sampleSize.add(" ");
+		HashMap<Integer, ArrayList<Long>> quickSortItem=runningTime.get("QuickSort");
+		Object[] quick_arr = quickSortItem.keySet().toArray();     
+		Arrays.sort(quick_arr); 
+		for (Object integer : quick_arr) {
+			Integer intValue=(Integer)integer;
+			sampleSize.add(String.valueOf(intValue));
+		}
+		outputdata.add(sampleSize);
+		
+		for (String  alName : sortName) {
+			ArrayList<String> timeSerious=new ArrayList<String>();
+			timeSerious.add(alName);
+			HashMap<Integer, ArrayList<Long>> timeItem=runningTime.get(alName);
+			Object[] key_arr = timeItem.keySet().toArray();     
+			Arrays.sort(key_arr);  
+			
+			for  (Object key : key_arr) { 
+				 ArrayList<Long> timeVlueList = timeItem.get(key); 
+				 long totalTime=0;
+				 for (Long subTime : timeVlueList) {
+					totalTime+=subTime;
+					// 全部打印，测试输出值和平均值的正确性
+					//timeSerious.add(String.valueOf(subTime));
+				 }
+				 long average=totalTime/(timeVlueList.size());
+				 timeSerious.add(String.valueOf(average));
+			}  
+			outputdata.add(timeSerious);
+		}
+		
+		Object[] sampleKeyset = countTop.keySet().toArray();     
+		Arrays.sort(sampleKeyset);  
+		for (Object object : sampleKeyset) {
+			ArrayList<String> topAlgorithmList=new ArrayList<String>();
+			topAlgorithmList.add(object.toString());
+			HashMap<String, Integer> sampleValue=countTop.get(object);
+			Iterator iter = sampleValue.entrySet().iterator();
+			while (iter.hasNext()) {
+				Map.Entry entry = (Map.Entry) iter.next();
+				topAlgorithmList.add(entry.getKey().toString());
+				topAlgorithmList.add(entry.getValue().toString());
+			}
+			outputdata.add(topAlgorithmList);
+		}
+		
+		String fileName="E:\\JavaWorkSpace\\Algorithm\\resultDouble.xls";
+		new OutputExcel().outputFile(outputdata, fileName);
+	}
+
+
+	private static void formIntergerTestData() {
 		HashMap<String, HashMap<Integer, ArrayList<Long>>> runningTime=
 				new HashMap<String, HashMap<Integer, ArrayList<Long>>>();
 		runningTime.put("QuickSort", new HashMap<Integer, ArrayList<Long>>());
@@ -101,8 +187,6 @@ public class TestClass {
 		
 		String fileName="G:\\WorkSpace\\SortingAlgorithm\\result.xls";
 		new OutputExcel().outputFile(outputdata, fileName);
-		
-		// 增加一段统计排序速度在前三项的数据结构
 	}
 
 
@@ -270,6 +354,108 @@ public class TestClass {
 		}
 		
 	}
+	
+	private static void TestDouble(int totalTest,
+			HashMap<String, HashMap<Integer, ArrayList<Long>>> timeRecorder,
+			HashMap<Integer, LinkedHashMap<String, Integer>> countTop,
+			ArrayList<String> sortName) {
+		
+		Random r=new Random();
+		for (int j=1; j < totalTest; j++) {
+			
+			System.out.println("Processing "+j+"th sorting sets.......");
+			int numberSize=1000*j;
+			Double[] numList=new Double[numberSize];
+			Double[] numList2=new Double[numberSize];
+			Double[] numList3=new Double[numberSize];
+			Double[] numList4=new Double[numberSize];
+			Double[] numList5=new Double[numberSize];
+			Double[] numList6=new Double[numberSize];
+			
+			for(int i=0;i<numberSize;i++){
+				double value=r.nextDouble()*numberSize;
+				numList[i]=value;
+				numList2[i]=value;
+				numList3[i]=value;
+				numList4[i]=value;
+				numList5[i]=value;
+				numList6[i]=value;	
+			}
+			
+			// 测试快速排序的时间
+			long[] times=new long[6];
+			long time1= new QuickSort<Double>()._quickSort(numList, 0, numberSize-1);
+		    if(!timeRecorder.get("QuickSort").containsKey(numberSize)){
+		    	ArrayList<Long> list=new ArrayList<Long>();
+		    	list.add(time1);
+		    	timeRecorder.get("QuickSort").put(numberSize,list);
+		    }else{
+		    	 timeRecorder.get("QuickSort").get(numberSize).add(time1);
+		    }
+		    times[0]=time1;
+		    
+		    long time2= new BubbleSort<Double>().bubbleSort(numList2,numberSize );
+			// 测试冒泡排序
+			if(!timeRecorder.get("BubbleSort").containsKey(numberSize)){
+			    	ArrayList<Long> list=new ArrayList<Long>();
+			    	list.add(time2);
+			    	timeRecorder.get("BubbleSort").put(numberSize,list);
+			    }else{
+			    	timeRecorder.get("BubbleSort").get(numberSize).add(time2);
+			    }
+			 times[1]=time2;
+			// 测试堆排序
+			long time3=new HeapSort<Double>().headSort(numList3);
+			if(!timeRecorder.get("HeapSort").containsKey(numberSize)){
+		    	ArrayList<Long> list=new ArrayList<Long>();
+		    	list.add(time3);
+		    	timeRecorder.get("HeapSort").put(numberSize,list);
+		    }else{
+		    	timeRecorder.get("HeapSort").get(numberSize).add(time3);
+		    }
+			 times[2]=time3;
+		
+		
+			long time4=new InsertSort<Double>().insertSort(numList4);
+			if(!timeRecorder.get("InsertSort").containsKey(numberSize)){
+		    	ArrayList<Long> list=new ArrayList<Long>();
+		    	list.add(time4);
+		    	timeRecorder.get("InsertSort").put(numberSize,list);
+		    }else{
+		    	timeRecorder.get("InsertSort").get(numberSize).add(time4);
+		    }
+			 times[3]=time4;
+			
+			long time5=new MergeSort().mergeSort(numList5);
+			if(!timeRecorder.get("MergeSort").containsKey(numberSize)){
+		    	ArrayList<Long> list=new ArrayList<Long>();
+		    	list.add(time5);
+		    	timeRecorder.get("MergeSort").put(numberSize,list);
+		    }else{
+		    	timeRecorder.get("MergeSort").get(numberSize).add(time5);
+		    }
+			 times[4]=time5;
+			
+			long time6=new ShellSort<Double>().shellSort(numList6);
+			if(!timeRecorder.get("ShellSort").containsKey(numberSize)){
+		    	ArrayList<Long> list=new ArrayList<Long>();
+		    	list.add(time6);
+		    	timeRecorder.get("ShellSort").put(numberSize,list);
+		    }else{
+		    	timeRecorder.get("ShellSort").get(numberSize).add(time6);
+		    }
+			 times[5]=time6;
+			
+             int topN=3;
+			 long[] topNtimes=new long[topN];
+			 int[] topNpositions=ChoosetopN(topN,times,topNtimes);
+			 coculateCountTop(numberSize,topNpositions,topNtimes,sortName,countTop);
+			 
+		}
+		
+	}
+	
+	
 
 	private static void coculateCountTop(int sampleSize,int[] topNpositions,
 			 long[] topNtimes, ArrayList<String> sortName, 
