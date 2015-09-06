@@ -4,7 +4,7 @@ import java.util.List;
 
 public class RadixSort {  
 	
-    public long radixSort(int[] data) {  
+    public long radixSort(Integer[] data) {  
     	long startTime=System.nanoTime();
     	
         int max = data[0];  
